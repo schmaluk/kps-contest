@@ -1,4 +1,4 @@
-import { IPosition } from '../model/index';
+import { IPosition } from '../model/ship';
 
 export const addPositions = (x: IPosition, y: IPosition): IPosition => [
 	x[0] + y[0],

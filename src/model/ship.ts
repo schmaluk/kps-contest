@@ -7,6 +7,7 @@ import {
 	positionToPx,
 	subtractPositions
 } from '../utils/vectorUtils';
+import { IUpdatableModel } from './modelLoop';
 
 export type IPosition = [number, number];
 
@@ -17,7 +18,7 @@ export enum Station {
 	D
 }
 
-export class Ship {
+export class Ship implements IUpdatableModel {
 	private currentPosition: IPosition;
 	private passedDistance: number = 0;
 	private targetPosition: IPosition | null;
