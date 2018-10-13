@@ -1,13 +1,12 @@
+import { config } from '../config';
+
 export interface IUpdatableModel {
 	updateModel(elapsedTimeInMs: number): void;
 }
 
-export const initUpdateModelLoop = (
-	loopConfig: { updateIntervalInMs: number },
-	...models: IUpdatableModel[]
-) =>
+export const initUpdateModelLoop = (...models: IUpdatableModel[]) =>
 	setInterval(() => {
 		for (const model of models) {
-			model.updateModel(loopConfig.updateIntervalInMs);
+			model.updateModel(config.MODEL_UPDATE_INTERVAL_MS);
 		}
-	}, loopConfig.updateIntervalInMs);
+	}, config.MODEL_UPDATE_INTERVAL_MS);
