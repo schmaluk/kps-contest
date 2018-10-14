@@ -1,11 +1,13 @@
 import { Ship } from './models/ship';
 import { config } from './config';
 import { StatisticsView } from './views/statisticsView';
+import { LakeView } from './views/lakeView';
 
 console.log('Started');
 
 // Initialize View components:
 const statisticsView = new StatisticsView();
+const lakeView = new LakeView();
 
 export type IStationNumber = 1 | 2 | 3 | 4;
 let lastStationNumber: IStationNumber | null = null;
@@ -22,6 +24,8 @@ ship.onPxPositionChanged = event => {
 	statisticsView.setTraveledDistance(event.kpsShip.traveledPxDistance);
 	statisticsView.setIsMoving(event.kpsShip.isPxMoving);
 	statisticsView.setLastStation(lastStationNumber);
+	// Update LakeView:
+	lakeView.setBoatPositionOnLake(event.kpsShip.currentPxPosition);
 };
 ship.target = [0, 0];
 
