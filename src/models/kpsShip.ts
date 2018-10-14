@@ -7,7 +7,6 @@ import {
 	positionToPx,
 	subtractPositions
 } from '../utils/vectorUtils';
-import { IUpdatableModel } from './modelLoop';
 
 // Initial config for a new Ship instance passed to constructor:
 export type IShipConfig = {
@@ -25,15 +24,22 @@ export type IPxPositionChangedHandler = (
 ) => void;
 
 // Ship-Model:
-export class Ship implements IUpdatableModel {
+export class KpsShip {
 	private currentPosition: IVector2D;
 	private passedDistance: number = 0;
 	private targetPosition: IVector2D | null;
 	private pxPositionChangedHandler: IPxPositionChangedHandler | null;
 
-	public constructor(private shipConfig: IShipConfig) {}
+	public constructor(private shipConfig: IShipConfig) {
+		this.currentPosition = shipConfig.position;
+	}
 
 	public updateModel(elapsedTimeInMs: number): void {
+		// No target defined -> Skip Update Logic
+		if (!this.targetPosition) {
+			return;
+		}
+
 		// Calculate new Position depending on elapsed time:
 		const movedPx = elapsedTimeInMs * this.shipConfig.shipSpeedPxPerMs;
 		const normalizedDirection: [number, number] = normalizeLength(
