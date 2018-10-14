@@ -7,6 +7,7 @@ import {
 	positionToPx,
 	subtractPositions
 } from '../utils/vectorUtils';
+import { ILoopUpdate } from '../ship';
 
 // Initial config for a new Ship instance passed to constructor:
 export type IShipConfig = {
@@ -24,7 +25,7 @@ export type IPxPositionChangedHandler = (
 ) => void;
 
 // Ship-Model:
-export class KpsShip {
+export class KpsShip implements ILoopUpdate {
 	private currentPosition: IVector2D;
 	private passedDistance: number = 0;
 	private targetPosition: IVector2D | null;
@@ -34,7 +35,7 @@ export class KpsShip {
 		this.currentPosition = shipConfig.position;
 	}
 
-	public updateModel(elapsedTimeInMs: number): void {
+	public loopUpdate(elapsedTimeInMs: number): void {
 		// No target defined -> Skip Update Logic
 		if (!this.targetPosition) {
 			return;

@@ -12,6 +12,10 @@ ship.onPxPositionChanged = event => {
 };
 ship.target = [0, 0];
 
+export interface ILoopUpdate {
+	loopUpdate(elapsedTimeInMs: number);
+}
+
 setInterval(() => {
-	ship.updateModel(config.UPDATE_LOOP_INTERVAL_MS);
+	ship.loopUpdate(config.UPDATE_LOOP_INTERVAL_MS);
 }, config.UPDATE_LOOP_INTERVAL_MS);
