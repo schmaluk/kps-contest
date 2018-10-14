@@ -6,7 +6,7 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = {
   mode: "development",
-  entry: { main: path.resolve("./src/ship.ts"), styles: path.resolve("./embedded/styles.css") },
+  entry: { main: path.resolve("./src/index.ts"), styles: path.resolve("./embedded/styles.css") },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].bundle.js"

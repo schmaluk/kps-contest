@@ -29,7 +29,7 @@ Afterwards please open [http://localhost:8080](http://localhost:8080).
 
 ## Advices
 
-To participate to the challenge, you have to edit "src/kpsShip.ts". You can add and use other JS/TS-Files, while you are not allowed to use files you don't have created yourself.
+To participate to the challenge, you have to edit "src/index.ts". You can add and use other JS/TS-Files, while you are not allowed to use files you don't have created yourself.
 We would love to see your solution in a git repository, but it`s not mandatory.
 
 ## Commit
