@@ -10,7 +10,7 @@ import {
 import { IUpdatableModel } from './modelLoop';
 
 // Initial config for a new Ship instance passed to constructor:
-export type IShipCondig = {
+export type IShipConfig = {
 	position: IVector2D;
 	shipSpeedPxPerMs: number;
 };
@@ -31,7 +31,7 @@ export class Ship implements IUpdatableModel {
 	private targetPosition: IVector2D | null;
 	private pxPositionChangedHandler: IPxPositionChangedHandler | null;
 
-	public constructor(private shipConfig: IShipCondig) {}
+	public constructor(private shipConfig: IShipConfig) {}
 
 	public updateModel(elapsedTimeInMs: number): void {
 		// Calculate new Position depending on elapsed time:
@@ -44,7 +44,7 @@ export class Ship implements IUpdatableModel {
 			multiplyPositionByScalar(normalizedDirection, movedPx)
 		);
 
-		// Throw PxPositionChnaged-Event in case px-position has changed:
+		// Throw PxPositionChanged-Event in case px-position has changed:
 		if (!positionEqualsInPx(newPosition, this.currentPosition)) {
 			this.pxPositionChangedHandler &&
 				this.pxPositionChangedHandler({
