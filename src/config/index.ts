@@ -5,8 +5,8 @@ export const config = {
 	SEA_WIDTH: 400,
 	SEA_LENGTH: 400,
 	INITIAL_SHIP_POSITION: [200, 200] as [number, number],
-	STATION_A_POSITION: [0, 0] as [number, number],
-	STATION_B_POSITION: [0, 0] as [number, number],
-	STATION_C_POSITION: [0, 0] as [number, number],
-	STATION_D_POSITION: [0, 0] as [number, number]
+	STATION_1_POSITION: [0, 0] as [number, number],
+	STATION_2_POSITION: [0, 0] as [number, number],
+	STATION_3_POSITION: [0, 0] as [number, number],
+	STATION_4_POSITION: [0, 0] as [number, number]
 };

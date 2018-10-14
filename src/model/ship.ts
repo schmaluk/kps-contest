@@ -1,6 +1,6 @@
-import { config } from '../config';
 import {
 	addPositions,
+	IVector2D,
 	multiplyPositionByScalar,
 	normalizeLength,
 	positionEqualsInPx,
@@ -9,62 +9,74 @@ import {
 } from '../utils/vectorUtils';
 import { IUpdatableModel } from './modelLoop';
 
-export type IPosition = [number, number];
+// Initial config for a new Ship instance passed to constructor:
+export type IShipCondig = {
+	position: IVector2D;
+	shipSpeedPxPerMs: number;
+};
 
-export enum Station {
-	A,
-	B,
-	C,
-	D
-}
-
-export class Ship implements IUpdatableModel {
-	private currentPosition: IPosition;
-	private passedDistance: number = 0;
-	private targetPosition: IPosition | null;
-	private lastStation: Station | null = null;
-
-	public constructor() {
-		this.currentPosition = config.INITIAL_SHIP_POSITION;
+// Signature of PxPositionChange-Handler for registering to a Ship-instance:
+export type IPxPositionChangedHandler = (
+	event: {
+		eventName: 'PxPositionChanged';
+		oldPositionInPx: IVector2D;
+		newPositionInPx: IVector2D;
 	}
+) => void;
+
+// Ship-Model:
+export class Ship implements IUpdatableModel {
+	private currentPosition: IVector2D;
+	private passedDistance: number = 0;
+	private targetPosition: IVector2D | null;
+	private pxPositionChangedHandler: IPxPositionChangedHandler | null;
+
+	public constructor(private shipConfig: IShipCondig) {}
 
 	public updateModel(elapsedTimeInMs: number): void {
-		const movedPx = elapsedTimeInMs * config.SHIP_SPEED_PX_PER_MS;
+		// Calculate new Position depending on elapsed time:
+		const movedPx = elapsedTimeInMs * this.shipConfig.shipSpeedPxPerMs;
 		const normalizedDirection: [number, number] = normalizeLength(
 			subtractPositions(this.targetPosition, this.currentPosition)
 		);
-		this.currentPosition = addPositions(
+		const newPosition = addPositions(
 			this.currentPosition,
 			multiplyPositionByScalar(normalizedDirection, movedPx)
 		);
-	}
 
-	public changeTargetStation(targetStation: Station): void {
-		switch (targetStation) {
-			case Station.A:
-				this.targetPosition = config.STATION_A_POSITION;
-				break;
-			case Station.B:
-				this.targetPosition = config.STATION_B_POSITION;
-				break;
-			case Station.C:
-				this.targetPosition = config.STATION_C_POSITION;
-				break;
-			case Station.D:
-				this.targetPosition = config.STATION_D_POSITION;
-				break;
+		// Throw PxPositionChnaged-Event in case px-position has changed:
+		if (!positionEqualsInPx(newPosition, this.currentPosition)) {
+			this.pxPositionChangedHandler &&
+				this.pxPositionChangedHandler({
+					eventName: 'PxPositionChanged',
+					oldPositionInPx: positionToPx(this.currentPosition),
+					newPositionInPx: positionToPx(newPosition)
+				});
 		}
+
+		// Update to new position:
+		this.currentPosition = newPosition;
 	}
 
-	public get currentPositionInPx(): IPosition {
+	public set onPxPositionChanged(
+		pxPositionChangedHandler: IPxPositionChangedHandler
+	) {
+		this.pxPositionChangedHandler = pxPositionChangedHandler;
+	}
+
+	public set target(targetPosition: IVector2D) {
+		this.targetPosition = targetPosition;
+	}
+
+	public get currentPxPosition(): IVector2D {
 		return positionToPx(this.currentPosition);
 	}
 
-	public get movedDistanceInPx(): number {
+	public get movedPxDistance(): number {
 		return Math.floor(this.passedDistance);
 	}
 
-	public get isMoving(): boolean {
+	public get isPxMoving(): boolean {
 		return !positionEqualsInPx(this.currentPosition, this.targetPosition);
 	}
 }
