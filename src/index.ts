@@ -25,7 +25,10 @@ ship.onPxPositionChanged = event => {
 	statisticsView.setIsMoving(event.kpsShip.isPxMoving);
 	statisticsView.setLastStation(lastStationNumber);
 	// Update LakeView:
-	lakeView.setBoatPositionOnLake(event.kpsShip.currentPxPosition);
+	lakeView.setBoatOnLake({
+		position: event.kpsShip.currentPxPosition,
+		rotationDegree: 90
+	});
 };
 ship.target = [0, 0];
 
