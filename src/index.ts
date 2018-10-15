@@ -3,12 +3,20 @@ import { config } from './config';
 import { StatisticsView } from './views/statisticsView';
 import { LakeView } from './views/lakeView';
 import { registerOnStationChangeHandlers } from './views/buttons';
+import { Station } from './models/station';
 
 console.log('Started');
 
 // Initialize View components:
 const statisticsView = new StatisticsView();
 const lakeView = new LakeView();
+
+const stations = {
+	1: new Station(config.STATION.one),
+	2: new Station(config.STATION.two),
+	3: new Station(config.STATION.three),
+	4: new Station(config.STATION.four)
+};
 
 export type IStationNumber = 1 | 2 | 3 | 4;
 let lastStationNumber: IStationNumber | null = null;
@@ -22,22 +30,20 @@ const ship = new Ship({
 ship.onPxPositionChanged = event => {
 	console.log(JSON.stringify(event));
 	// Update StatisticsView:
-	statisticsView.setTraveledDistance(event.kpsShip.traveledPxDistance);
-	statisticsView.setIsMoving(event.kpsShip.isPxMoving);
+	statisticsView.setTraveledDistance(event.ship.traveledPxDistance);
+	statisticsView.setIsMoving(event.ship.isPxMoving);
 	statisticsView.setLastStation(lastStationNumber);
 	// Update LakeView:
 	lakeView.setBoatOnLake({
-		position: event.kpsShip.currentPxPosition,
-		rotationDegree: event.kpsShip.rotationDegreeFloored
+		position: event.ship.currentPxPosition,
+		rotationDegree: event.ship.rotationDegreeFloored
 	});
 };
+
 registerOnStationChangeHandlers(stationNumber => {
-	console.log('station changed : ' + stationNumber);
-	const stationConfig = config.STATION[stationNumber];
-	ship.target = {
-		position: stationConfig.position,
-		dockDegree: stationConfig.dockDegree
-	};
+	console.log('station.ts changed : ' + stationNumber);
+	const targetStation = stations[stationNumber];
+	ship.targetStation = targetStation;
 });
 
 setInterval(() => {

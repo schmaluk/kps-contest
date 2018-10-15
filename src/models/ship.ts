@@ -8,6 +8,7 @@ import {
 	vec2DLength,
 	scalarProduct
 } from '../utils/vectorUtils';
+import { Station } from './station';
 
 // Initial config for a new Ship instance passed to constructor:
 export type IShipConfig = {
@@ -19,7 +20,7 @@ export type IShipConfig = {
 export type IPxPositionChangedHandler = (
 	event: {
 		eventName: 'PxPositionChanged';
-		kpsShip: Ship;
+		ship: Ship;
 	}
 ) => void;
 
@@ -28,8 +29,8 @@ export class Ship {
 	// ship positional attributes:
 	private currentPosition: IVector2D;
 	private traveledDistance: number = 0;
-	private targetPosition: IVector2D | null;
-	private targetDockDegree: number | null;
+
+	public targetStation: Station | null;
 	private rotationDegree: number = 0;
 
 	private pxPositionChangedHandler: IPxPositionChangedHandler | null;
@@ -48,24 +49,25 @@ export class Ship {
 			return;
 		}
 
-		const shipHasNoTarget = !this.targetPosition;
-		if (shipHasNoTarget) {
+		const shipHasNoTargetStation = !this.targetStation;
+		if (shipHasNoTargetStation) {
 			return;
 		}
 
 		const shipHasArrivedToTarget = positionEqualsInPx(
-			this.targetPosition,
+			this.targetStation.position,
 			this.currentPosition
 		);
 		if (shipHasArrivedToTarget) {
-			const shipHasDocked = this.rotationDegree === this.targetDockDegree;
+			const shipHasDocked =
+				this.rotationDegree === this.targetStation.dockAngle;
 			if (!shipHasDocked) {
-				// Ship docks at station:
-				this.rotationDegree = this.targetDockDegree;
+				// Ship docks at station.ts:
+				this.rotationDegree = this.targetStation.dockAngle;
 				this.pxPositionChangedHandler &&
 					this.pxPositionChangedHandler({
 						eventName: 'PxPositionChanged',
-						kpsShip: this
+						ship: this
 					});
 			}
 			return;
@@ -73,7 +75,10 @@ export class Ship {
 
 		// Calculate new Ship Position depending on elapsed time:
 		const oldPosition = this.currentPosition;
-		const connectionVector = subtractVec2Ds(this.targetPosition, oldPosition);
+		const connectionVector = subtractVec2Ds(
+			this.targetStation.position,
+			oldPosition
+		);
 		const distanceToTarget = vec2DLength(connectionVector);
 
 		console.log('Calculate new Position depending on elapsed time');
@@ -120,7 +125,7 @@ export class Ship {
 			this.pxPositionChangedHandler &&
 				this.pxPositionChangedHandler({
 					eventName: 'PxPositionChanged',
-					kpsShip: this
+					ship: this
 				});
 		}
 	}
@@ -130,11 +135,6 @@ export class Ship {
 	) {
 		this.pxPositionChangedHandler = pxPositionChangedHandler;
 		this.pxPositionChangedHandler.bind(this);
-	}
-
-	public set target(target: { position: IVector2D; dockDegree: number }) {
-		this.targetPosition = target.position;
-		this.targetDockDegree = target.dockDegree;
 	}
 
 	public get currentPxPosition(): IVector2D {
@@ -147,12 +147,15 @@ export class Ship {
 
 	public get isPxMoving(): boolean {
 		console.log(this.currentPosition);
-		console.log(this.targetPosition);
+		console.log(this.targetStation.position);
 		console.log(
 			'isPxMoving : ' +
-				!positionEqualsInPx(this.currentPosition, this.targetPosition)
+				!positionEqualsInPx(this.currentPosition, this.targetStation.position)
 		);
-		return !positionEqualsInPx(this.currentPosition, this.targetPosition);
+		return !positionEqualsInPx(
+			this.currentPosition,
+			this.targetStation.position
+		);
 	}
 
 	public get rotationDegreeFloored() {
