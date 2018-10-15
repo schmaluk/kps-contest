@@ -2,6 +2,7 @@ import { Ship } from './models/ship';
 import { config } from './config';
 import { StatisticsView } from './views/statisticsView';
 import { LakeView } from './views/lakeView';
+import { registerOnStationChangeHandlers } from './views/buttons';
 
 console.log('Started');
 
@@ -30,11 +31,10 @@ ship.onPxPositionChanged = event => {
 		rotationDegree: event.kpsShip.rotationDegreeFloored
 	});
 };
-ship.target = [1, 0];
-
-export interface ILoopable {
-	loopUpdate(): void;
-}
+registerOnStationChangeHandlers(stationNumber => {
+	console.log('station changed : ' + stationNumber);
+	ship.target = config.STATION_POSITIONS[stationNumber];
+});
 
 setInterval(() => {
 	ship.loopUpdate();

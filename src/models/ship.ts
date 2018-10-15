@@ -8,7 +8,6 @@ import {
 	vec2DLength,
 	scalarProduct
 } from '../utils/vectorUtils';
-import { ILoopable } from '../index';
 
 // Initial config for a new Ship instance passed to constructor:
 export type IShipConfig = {
@@ -25,7 +24,7 @@ export type IPxPositionChangedHandler = (
 ) => void;
 
 // Ship-Model:
-export class Ship implements ILoopable {
+export class Ship {
 	// ship positional attributes:
 	private currentPosition: IVector2D;
 	private traveledDistance: number = 0;
