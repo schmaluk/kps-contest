@@ -30,3 +30,22 @@ export const positionEqualsInPx = (x: IVector2D, y: IVector2D): boolean => {
 	console.log('yInPx : ' + yInPx);
 	return xInPx[0] === yInPx[0] && xInPx[1] === yInPx[1];
 };
+
+export const scalarProduct = (x: IVector2D, y: IVector2D) => {
+	return x[0] * y[0] + x[1] * y[1];
+};
+
+export const calcDegreeBetweenVec2Ds = (x: IVector2D, y: IVector2D) => {
+	const cosAlpha = scalarProduct(x, y) / (vec2DLength(x) * vec2DLength(y));
+	const alpha = Math.acos(cosAlpha);
+	// Check, if degree between x and y should be positive or negative:
+	const xRotated90Degree: IVector2D = [x[1], -x[0]];
+	if (scalarProduct(xRotated90Degree, y) > 0) {
+		// y is a vector between x and xRotated90Degree:
+		// -> x needs to be rotated with a negative degree to get y:
+		return alpha;
+	} else {
+		// -> x needs to be rotated with a positive degree to get y:
+		return -alpha;
+	}
+};

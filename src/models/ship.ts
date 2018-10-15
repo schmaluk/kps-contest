@@ -2,11 +2,11 @@ import {
 	addVec2Ds,
 	IVector2D,
 	multiplyVec2DByScalar,
-	normalizeVec2D,
 	positionEqualsInPx,
 	vec2DToVec2DInPx,
 	subtractVec2Ds,
-	vec2DLength
+	vec2DLength,
+	scalarProduct
 } from '../utils/vectorUtils';
 import { ILoopable } from '../index';
 
@@ -26,9 +26,12 @@ export type IPxPositionChangedHandler = (
 
 // Ship-Model:
 export class Ship implements ILoopable {
+	// ship positional attributes:
 	private currentPosition: IVector2D;
 	private traveledDistance: number = 0;
 	private targetPosition: IVector2D | null;
+	private rotationDegree: number = 0;
+
 	private pxPositionChangedHandler: IPxPositionChangedHandler | null;
 	private lastLoopUpdate: number | null;
 
@@ -58,7 +61,7 @@ export class Ship implements ILoopable {
 			return;
 		}
 
-		// Calculate new Position depending on elapsed time:
+		// Calculate new Ship Position depending on elapsed time:
 		const oldPosition = this.currentPosition;
 		const connectionVector = subtractVec2Ds(this.targetPosition, oldPosition);
 		const distanceToTarget = vec2DLength(connectionVector);
@@ -86,6 +89,20 @@ export class Ship implements ILoopable {
 
 		// Update traveled distance:
 		this.traveledDistance += movedPx;
+
+		// Update rotation degree:
+		const cosAlpha = scalarProduct([-1, 0], normalizedDirectionVector);
+		const alpha = (Math.acos(cosAlpha) / Math.PI) * 180;
+		const rotationDegree = alpha >= 0 ? alpha : 180 - alpha;
+		console.log('normalizedDirectionVector : ' + normalizedDirectionVector);
+		console.log(
+			'scalarProduct([0, 1], normalizedDirectionVector) : ' +
+				scalarProduct([0, 1], normalizedDirectionVector)
+		);
+		const signum =
+			scalarProduct([0, 1], normalizedDirectionVector) >= 0 ? -1 : 1;
+		this.rotationDegree = signum * rotationDegree;
+		console.log('rotationDegree : ' + rotationDegree);
 
 		// Throw PxPositionChanged-Event in case px-position has changed:
 		if (!positionEqualsInPx(newPosition, oldPosition)) {
@@ -124,5 +141,10 @@ export class Ship implements ILoopable {
 				!positionEqualsInPx(this.currentPosition, this.targetPosition)
 		);
 		return !positionEqualsInPx(this.currentPosition, this.targetPosition);
+	}
+
+	public get rotationDegreeFloored() {
+		console.log('this.rotationDegree : ' + this.rotationDegree);
+		return Math.floor(this.rotationDegree);
 	}
 }

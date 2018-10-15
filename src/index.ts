@@ -27,10 +27,10 @@ ship.onPxPositionChanged = event => {
 	// Update LakeView:
 	lakeView.setBoatOnLake({
 		position: event.kpsShip.currentPxPosition,
-		rotationDegree: 90
+		rotationDegree: event.kpsShip.rotationDegreeFloored
 	});
 };
-ship.target = [0, 0];
+ship.target = [1, 0];
 
 export interface ILoopable {
 	loopUpdate(): void;

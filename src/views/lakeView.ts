@@ -33,6 +33,7 @@ export class LakeView {
 	}
 
 	private setBoatRotation(degree: number) {
+		console.log('degree : ' + degree);
 		const rotationValue = `rotate(${degree.toString(10)}deg)`;
 		console.log('rotationValue : ' + rotationValue);
 		this.boat.style.transform = rotationValue;
