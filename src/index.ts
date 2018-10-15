@@ -33,7 +33,11 @@ ship.onPxPositionChanged = event => {
 };
 registerOnStationChangeHandlers(stationNumber => {
 	console.log('station changed : ' + stationNumber);
-	ship.target = config.STATION_POSITIONS[stationNumber];
+	const stationConfig = config.STATION[stationNumber];
+	ship.target = {
+		position: stationConfig.position,
+		dockDegree: stationConfig.dockDegree
+	};
 });
 
 setInterval(() => {

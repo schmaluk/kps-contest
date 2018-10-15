@@ -29,6 +29,7 @@ export class Ship {
 	private currentPosition: IVector2D;
 	private traveledDistance: number = 0;
 	private targetPosition: IVector2D | null;
+	private targetDockDegree: number | null;
 	private rotationDegree: number = 0;
 
 	private pxPositionChangedHandler: IPxPositionChangedHandler | null;
@@ -57,6 +58,16 @@ export class Ship {
 			this.currentPosition
 		);
 		if (shipHasArrivedToTarget) {
+			const shipHasDocked = this.rotationDegree === this.targetDockDegree;
+			if (!shipHasDocked) {
+				// Ship docks at station:
+				this.rotationDegree = this.targetDockDegree;
+				this.pxPositionChangedHandler &&
+					this.pxPositionChangedHandler({
+						eventName: 'PxPositionChanged',
+						kpsShip: this
+					});
+			}
 			return;
 		}
 
@@ -93,6 +104,7 @@ export class Ship {
 		const cosAlpha = scalarProduct([-1, 0], normalizedDirectionVector);
 		const alpha = (Math.acos(cosAlpha) / Math.PI) * 180;
 		const rotationDegree = alpha >= 0 ? alpha : 180 - alpha;
+
 		console.log('normalizedDirectionVector : ' + normalizedDirectionVector);
 		console.log(
 			'scalarProduct([0, 1], normalizedDirectionVector) : ' +
@@ -120,8 +132,9 @@ export class Ship {
 		this.pxPositionChangedHandler.bind(this);
 	}
 
-	public set target(targetPosition: IVector2D) {
-		this.targetPosition = targetPosition;
+	public set target(target: { position: IVector2D; dockDegree: number }) {
+		this.targetPosition = target.position;
+		this.targetDockDegree = target.dockDegree;
 	}
 
 	public get currentPxPosition(): IVector2D {
