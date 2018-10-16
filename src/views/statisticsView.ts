@@ -1,5 +1,3 @@
-import { IStationNumber } from '../index';
-
 export class StatisticsView {
 	// Html-View-Elements:
 	private traveledDistance: HTMLElement = document.querySelector('#travel');
@@ -10,9 +8,10 @@ export class StatisticsView {
 		this.traveledDistance.innerText = distance.toString(10);
 	}
 
-	public setLastStation(stationNumber: IStationNumber | null) {
+	public setLastStation(stationNumber: number | null) {
+		console.log('stationNumber : ' + stationNumber);
 		this.lastStation.innerText =
-			(stationNumber && stationNumber.toString(10)) || '';
+			(stationNumber && stationNumber.toString(10)) || '-';
 	}
 
 	public setIsMoving(isMoving: boolean) {

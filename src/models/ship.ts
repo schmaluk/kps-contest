@@ -30,14 +30,23 @@ export class Ship {
 	private currentPosition: IVector2D;
 	private traveledDistance: number = 0;
 
+	public lastStation: Station | null;
 	public targetStation: Station | null;
 	private rotationDegree: number = 0;
+	public isMoving: boolean = false;
 
 	private pxPositionChangedHandler: IPxPositionChangedHandler | null;
 	private lastLoopUpdate: number | null;
 
 	public constructor(private shipConfig: IShipConfig) {
 		this.currentPosition = shipConfig.position;
+	}
+
+	private hasArrivedAtTargetStation() {
+		return (
+			this.targetStation &&
+			positionEqualsInPx(this.targetStation.position, this.currentPosition)
+		);
 	}
 
 	public loopUpdate(): void {
@@ -54,26 +63,25 @@ export class Ship {
 			return;
 		}
 
-		const shipHasArrivedToTarget = positionEqualsInPx(
-			this.targetStation.position,
-			this.currentPosition
-		);
-		if (shipHasArrivedToTarget) {
+		if (this.hasArrivedAtTargetStation()) {
+			this.lastStation = this.targetStation;
+			this.isMoving = false;
 			const shipHasDocked =
 				this.rotationDegree === this.targetStation.dockAngle;
 			if (!shipHasDocked) {
 				// Ship docks at station.ts:
 				this.rotationDegree = this.targetStation.dockAngle;
-				this.pxPositionChangedHandler &&
-					this.pxPositionChangedHandler({
-						eventName: 'PxPositionChanged',
-						ship: this
-					});
 			}
+			this.pxPositionChangedHandler &&
+				this.pxPositionChangedHandler({
+					eventName: 'PxPositionChanged',
+					ship: this
+				});
 			return;
 		}
 
 		// Calculate new Ship Position depending on elapsed time:
+		this.isMoving = true;
 		const oldPosition = this.currentPosition;
 		const connectionVector = subtractVec2Ds(
 			this.targetStation.position,
@@ -133,8 +141,11 @@ export class Ship {
 	public set onPxPositionChanged(
 		pxPositionChangedHandler: IPxPositionChangedHandler
 	) {
-		this.pxPositionChangedHandler = pxPositionChangedHandler;
-		this.pxPositionChangedHandler.bind(this);
+		this.pxPositionChangedHandler = pxPositionChangedHandler.bind(this);
+		this.pxPositionChangedHandler({
+			eventName: 'PxPositionChanged',
+			ship: this
+		});
 	}
 
 	public get currentPxPosition(): IVector2D {
@@ -143,19 +154,6 @@ export class Ship {
 
 	public get traveledPxDistance(): number {
 		return Math.floor(this.traveledDistance);
-	}
-
-	public get isPxMoving(): boolean {
-		console.log(this.currentPosition);
-		console.log(this.targetStation.position);
-		console.log(
-			'isPxMoving : ' +
-				!positionEqualsInPx(this.currentPosition, this.targetStation.position)
-		);
-		return !positionEqualsInPx(
-			this.currentPosition,
-			this.targetStation.position
-		);
 	}
 
 	public get rotationDegreeFloored() {

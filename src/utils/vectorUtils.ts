@@ -19,8 +19,8 @@ export const normalizeVec2D = (x: IVector2D): IVector2D => {
 };
 
 export const vec2DToVec2DInPx = ([x, y]: IVector2D): IVector2D => [
-	Math.floor(x),
-	Math.floor(y)
+	Math.round(x),
+	Math.round(y)
 ];
 
 export const positionEqualsInPx = (x: IVector2D, y: IVector2D): boolean => {

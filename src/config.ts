@@ -7,9 +7,21 @@ export const config = {
 	SEA_LENGTH: 400,
 	INITIAL_SHIP_POSITION: [200, 200] as [number, number],
 	STATION: {
-		one: { position: [30, 200] as IVector2D, dockAngle: 0 },
-		two: { position: [370, 200] as IVector2D, dockAngle: 180 },
-		three: { position: [200, 30] as IVector2D, dockAngle: 90 },
-		four: { position: [200, 370] as IVector2D, dockAngle: 270 }
+		one: { stationNumber: 1, position: [30, 200] as IVector2D, dockAngle: 0 },
+		two: {
+			stationNumber: 2,
+			position: [370, 200] as IVector2D,
+			dockAngle: 180
+		},
+		three: {
+			stationNumber: 3,
+			position: [200, 30] as IVector2D,
+			dockAngle: 90
+		},
+		four: {
+			stationNumber: 4,
+			position: [200, 370] as IVector2D,
+			dockAngle: 270
+		}
 	}
 };

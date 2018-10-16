@@ -18,9 +18,6 @@ const stations = {
 	4: new Station(config.STATION.four)
 };
 
-export type IStationNumber = 1 | 2 | 3 | 4;
-let lastStationNumber: IStationNumber | null = null;
-
 // Initialize Ship Model instance:
 const ship = new Ship({
 	shipSpeedPxPerMs: config.SHIP_SPEED_PX_PER_SEC / 1000,
@@ -31,8 +28,10 @@ ship.onPxPositionChanged = event => {
 	console.log(JSON.stringify(event));
 	// Update StatisticsView:
 	statisticsView.setTraveledDistance(event.ship.traveledPxDistance);
-	statisticsView.setIsMoving(event.ship.isPxMoving);
-	statisticsView.setLastStation(lastStationNumber);
+	statisticsView.setIsMoving(event.ship.isMoving);
+	statisticsView.setLastStation(
+		(event.ship.lastStation && event.ship.lastStation.stationNumber) || null
+	);
 	// Update LakeView:
 	lakeView.setBoatOnLake({
 		position: event.ship.currentPxPosition,
