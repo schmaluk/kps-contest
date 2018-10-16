@@ -9,7 +9,6 @@ export class StatisticsView {
 	}
 
 	public setLastStation(stationNumber: number | null) {
-		console.log('stationNumber : ' + stationNumber);
 		this.lastStation.innerText =
 			(stationNumber && stationNumber.toString(10)) || '-';
 	}

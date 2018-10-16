@@ -5,14 +5,14 @@ import {
 } from '../utils/vectorUtils';
 
 export class LakeView {
-	// Html-View-Elements:
-	private boat: HTMLElement;
-	private readonly boatDimensions: IVector2D;
-
+	// Referencing Html-View-Elements:
+	private boat: HTMLElement = document.querySelector('#boat');
 	private lake: HTMLElement = document.querySelector('#lake');
 
+	// Save boat dimensions: width & height
+	private readonly boatDimensions: IVector2D;
+
 	constructor() {
-		this.boat = document.querySelector('#boat');
 		this.boatDimensions = [this.boat.clientWidth, this.boat.clientHeight];
 		this.boat.style.position = 'absolute';
 		this.lake.style.position = 'relative';
@@ -33,15 +33,12 @@ export class LakeView {
 	}
 
 	private setBoatRotation(degree: number) {
-		console.log('degree : ' + degree);
 		const rotationValue = `rotate(${degree.toString(10)}deg)`;
-		console.log('rotationValue : ' + rotationValue);
 		this.boat.style.transform = rotationValue;
 		this.boat.style.webkitTransform = rotationValue;
 	}
 
 	public setBoatOnLake(args: { position: IVector2D; rotationDegree?: number }) {
-		//newBoatPosition = [200, 200];
 		this.setBoatPosition(args.position);
 		const degree = args.rotationDegree || 0;
 		this.setBoatRotation(degree);
