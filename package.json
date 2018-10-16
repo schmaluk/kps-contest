@@ -7,6 +7,10 @@
     "start": "webpack-dev-server"
   },
   "author": "Timo Surmann",
+  "contributors": [{
+    "name": "Maik Lukasch",
+    "email": "maiklukasch@gmail.com"
+  }],
   "license": "ISC",
   "devDependencies": {
     "autoprefixer": "^9.1.5",

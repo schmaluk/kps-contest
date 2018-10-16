@@ -16,7 +16,7 @@ export class LakeMap {
 		this.boat = document.querySelector('#boat');
 		this.boatDimensions = [this.boat.clientWidth, this.boat.clientHeight];
 		this.boat.style.position = 'absolute';
-		this.boat.style.zIndex = '1';
+		this.boat.style.zIndex = '1000';
 		this.lake.style.position = 'relative';
 	}
 
