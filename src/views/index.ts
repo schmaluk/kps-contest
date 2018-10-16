@@ -1,11 +1,9 @@
-import { addStationChangeHandlers } from './buttons';
 import { Statistics } from './statistics';
-import { Lake } from './lake';
+import { LakeMap } from './lakeMap';
+import { buttons } from './buttons';
 
 export const View = {
-	buttons: {
-		addStationChangeHandlers
-	},
+	buttons,
 	statistics: new Statistics(),
-	lake: new Lake()
+	lakeMap: new LakeMap()
 };

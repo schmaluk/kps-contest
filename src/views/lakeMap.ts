@@ -4,17 +4,19 @@ import {
 	subtractVec2Ds
 } from '../utils/vectorUtils';
 
-export class Lake {
+export class LakeMap {
 	// Referencing Html-View-Elements:
-	private boat: HTMLElement = document.querySelector('#boat');
+	private boat: HTMLElement;
 	private lake: HTMLElement = document.querySelector('#lake');
 
 	// Save boat dimensions: width & height
 	private readonly boatDimensions: IVector2D;
 
 	constructor() {
+		this.boat = document.querySelector('#boat');
 		this.boatDimensions = [this.boat.clientWidth, this.boat.clientHeight];
 		this.boat.style.position = 'absolute';
+		this.boat.style.zIndex = '1';
 		this.lake.style.position = 'relative';
 	}
 

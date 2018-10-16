@@ -20,8 +20,8 @@ ship.setOnPositionChangedHandler(event => {
 			event.ship.getLastStation().stationNumber) ||
 			null
 	);
-	// Update View: Lake
-	View.lake.setBoatOnLake({
+	// Update View: LakeMap
+	View.lakeMap.setBoatOnLake({
 		position: event.ship.currentPositionInPx,
 		rotationDegree: event.ship.rotationDegreeRounded
 	});
