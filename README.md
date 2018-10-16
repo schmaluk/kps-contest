@@ -27,11 +27,7 @@ npm start
 
 Afterwards please open [http://localhost:8080](http://localhost:8080).
 
-## Advices
-
-To participate to the challenge, you have to edit "src/index.ts". You can add and use other JS/TS-Files, while you are not allowed to use files you don't have created yourself.
-We would love to see your solution in a git repository, but it`s not mandatory.
-
-## Commit
-
-Please commit you finished app in a mail to developer-challenge@kps.com. You are free to choose ion you send us a zip folder or a link to your git repository.
+### Configuration if needed:
+```config.ts```
+* SHIP_SPEED_PX_PER_SEC
+* UPDATE_LOOP_INTERVAL_MS 
