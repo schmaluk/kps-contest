@@ -1,13 +1,7 @@
 import { Ship } from './models/ship';
 import { config } from './config';
-import { StatisticsView } from './views/statisticsView';
-import { LakeView } from './views/lakeView';
-import { setOnStationChangeHandlersToButtons } from './views/buttons';
+import { View } from './views';
 import { Station } from './models/station';
-
-// Create View components:
-const statisticsView = new StatisticsView();
-const lakeView = new LakeView();
 
 // Create Ship Model instance:
 const ship = new Ship({
@@ -16,31 +10,31 @@ const ship = new Ship({
 });
 
 // Register EventHandler to Ship model:
-ship.setOnPositionChangedHandler = event => {
+ship.setOnPositionChangedHandler(event => {
 	console.log(JSON.stringify(event));
-	// Update StatisticsView:
-	statisticsView.setTraveledDistance(event.ship.traveledDistanceInPx);
-	statisticsView.setIsMoving(event.ship.isMoving);
-	statisticsView.setLastStation(
+	// Update View: Statistics
+	View.statistics.setTraveledDistance(event.ship.traveledDistanceInPx);
+	View.statistics.setIsMoving(event.ship.isMoving);
+	View.statistics.setLastStation(
 		(event.ship.getLastStation() &&
 			event.ship.getLastStation().stationNumber) ||
 			null
 	);
-	// Update LakeView:
-	lakeView.setBoatOnLake({
+	// Update View: Lake
+	View.lake.setBoatOnLake({
 		position: event.ship.currentPositionInPx,
 		rotationDegree: event.ship.rotationDegreeRounded
 	});
-};
+});
 
-// Register Handlers to Buttons:
+// Register Handlers to View: Buttons
 const stations = {
 	1: new Station(config.STATION.one),
 	2: new Station(config.STATION.two),
 	3: new Station(config.STATION.three),
 	4: new Station(config.STATION.four)
 };
-setOnStationChangeHandlersToButtons(stationNumber => {
+View.buttons.addStationChangeHandlers(stationNumber => {
 	const targetStation = stations[stationNumber];
 	ship.setTargetStation(targetStation);
 });

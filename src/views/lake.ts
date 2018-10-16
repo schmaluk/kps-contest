@@ -4,7 +4,7 @@ import {
 	subtractVec2Ds
 } from '../utils/vectorUtils';
 
-export class LakeView {
+export class Lake {
 	// Referencing Html-View-Elements:
 	private boat: HTMLElement = document.querySelector('#boat');
 	private lake: HTMLElement = document.querySelector('#lake');

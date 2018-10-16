@@ -1,4 +1,4 @@
-export class StatisticsView {
+export class Statistics {
 	// Html-View-Elements:
 	private traveledDistance: HTMLElement = document.querySelector('#travel');
 	private lastStation: HTMLElement = document.querySelector('#last-station');

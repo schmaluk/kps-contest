@@ -1,4 +1,4 @@
-export const setOnStationChangeHandlersToButtons = (
+export const addStationChangeHandlers = (
 	stationChangedHandler: (stationNumber: number) => any
 ) => {
 	const buttons = document.querySelectorAll('nav button');

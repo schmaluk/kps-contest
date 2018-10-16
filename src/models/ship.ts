@@ -138,7 +138,7 @@ export class Ship {
 		}
 	}
 
-	public set setOnPositionChangedHandler(
+	public setOnPositionChangedHandler(
 		onPositionChangedHandler: IShipPositionChangedHandler
 	) {
 		this.onPositionChanged = onPositionChangedHandler.bind(this);
