@@ -41,5 +41,5 @@ View.buttons.addStationChangeHandlers(stationNumber => {
 
 // Start loop for ship's position update:
 setInterval(() => {
-	ship.updatePosition();
+	ship.requestMove();
 }, config.UPDATE_LOOP_INTERVAL_MS);

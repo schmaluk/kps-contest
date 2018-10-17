@@ -14,8 +14,8 @@ export const vec2DLength = (x: IVector2D): number =>
 	Math.sqrt(x[0] ** 2 + x[1] ** 2);
 
 export const floorVec2D = ([x, y]: IVector2D): IVector2D => [
-	Math.floor(x),
-	Math.floor(y)
+	Math.round(x),
+	Math.round(y)
 ];
 
 export const vec2DEquals = (x: IVector2D, y: IVector2D): boolean => {
@@ -24,4 +24,9 @@ export const vec2DEquals = (x: IVector2D, y: IVector2D): boolean => {
 
 export const vec2DScalarProduct = (x: IVector2D, y: IVector2D) => {
 	return x[0] * y[0] + x[1] * y[1];
+};
+
+export const distanceBetweenVec2Ds = (x: IVector2D, y: IVector2D) => {
+	const connectionVector = subtractVec2Ds(x, y);
+	return vec2DLength(connectionVector);
 };
