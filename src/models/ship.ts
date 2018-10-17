@@ -2,8 +2,8 @@ import {
 	addVec2Ds,
 	IVector2D,
 	multiplyVec2DByScalar,
-	vec2DRoundedEquals,
-	roundVec2D,
+	vec2DEquals,
+	floorVec2D,
 	subtractVec2Ds,
 	vec2DLength,
 	vec2DScalarProduct
@@ -48,14 +48,6 @@ export class Ship {
 		this.currentPosition = shipConfig.position;
 	}
 
-	// Helper method: Checks, if ship has arrived at targetStation:
-	private hasArrivedAtTargetStation(): boolean {
-		return (
-			this.targetStation &&
-			vec2DRoundedEquals(this.targetStation.position, this.currentPosition)
-		);
-	}
-
 	// Periodically called in order tu update ship's position:
 	public updatePosition(): void {
 		// Update timestamp:
@@ -76,19 +68,13 @@ export class Ship {
 			return;
 		}
 
-		// When a ship has arrived at target station:
-		// Skip position update but initiate dock process
-		if (this.hasArrivedAtTargetStation()) {
-			this.lastStation = this.targetStation;
-			this.isMoving = false;
-			const shipHasDocked =
-				this.rotationDegree === this.targetStation.dockAngle;
-			if (!shipHasDocked) {
-				// Rotate Ship for docking:
-				this.rotationDegree = this.targetStation.dockAngle;
-				// Throw Event:
-				this.onPositionChanged && this.onPositionChanged({ ship: this });
-			}
+		// Ship has already arrived at target station:
+		// Skip position update
+		const shipHasArrivedAtTargetStation = vec2DEquals(
+			this.currentPosition,
+			this.targetStation.position
+		);
+		if (shipHasArrivedAtTargetStation) {
 			return;
 		}
 
@@ -101,41 +87,50 @@ export class Ship {
 		);
 		const distanceToTarget = vec2DLength(connectionVector);
 		const elapsedTimeInMs = this.lastUpdateTimestamp - lastUpdateTimestampOld;
-		const movedPx = Math.min(
-			distanceToTarget,
-			elapsedTimeInMs * this.shipConfig.shipSpeedPxPerMs
-		);
-		const normalizedDirectionVector: [number, number] = multiplyVec2DByScalar(
-			1 / distanceToTarget,
-			connectionVector
-		);
-		const newPosition = addVec2Ds(
-			oldPosition,
-			multiplyVec2DByScalar(movedPx, normalizedDirectionVector)
-		);
 
-		// Update to new position:
-		this.currentPosition = newPosition;
+		// movementDistance is the distance the ship can move within this update call:
+		const movementDistance = elapsedTimeInMs * this.shipConfig.shipSpeedPxPerMs;
 
-		// Update traveled distance:
-		this.traveledDistance += movedPx;
-
-		// Update rotation degree:
-		const cosAlpha = vec2DScalarProduct([-1, 0], normalizedDirectionVector);
-		const alpha = (Math.acos(cosAlpha) / Math.PI) * 180;
-		const rotationDegree = alpha >= 0 ? alpha : 180 - alpha;
-		// Calculate signum for rotation: + or - aka 1 or -1
-		const signum =
-			vec2DScalarProduct([0, 1], normalizedDirectionVector) >= 0 ? -1 : 1;
-		this.rotationDegree = signum * rotationDegree;
+		// Checks, if remaining distance to target < movementDistance:
+		if (distanceToTarget < movementDistance) {
+			// Target is within reachable distance during this movement:
+			// Set currentPosition to targetPosition
+			this.currentPosition = this.targetStation.position;
+			// Rotate Ship for docking:
+			this.rotationDegree = this.targetStation.dockAngle;
+			this.isMoving = false;
+			this.lastStation = this.targetStation;
+			this.traveledDistance += Math.round(distanceToTarget);
+		} else {
+			// Target is not yet reachable:
+			// Update to new position:
+			const normalizedDirectionVector: [number, number] = multiplyVec2DByScalar(
+				1 / distanceToTarget,
+				connectionVector
+			);
+			const newPosition = addVec2Ds(
+				oldPosition,
+				multiplyVec2DByScalar(movementDistance, normalizedDirectionVector)
+			);
+			// Set currentPosition to newPosition:
+			this.currentPosition = newPosition;
+			this.isMoving = true;
+			this.traveledDistance += movementDistance;
+			// Update rotation degree:
+			const cosAlpha = vec2DScalarProduct([-1, 0], normalizedDirectionVector);
+			const alpha = (Math.acos(cosAlpha) / Math.PI) * 180;
+			const rotationDegree = alpha >= 0 ? alpha : 180 - alpha;
+			// Calculate signum for rotation: + or - aka 1 or -1
+			const signum =
+				vec2DScalarProduct([0, 1], normalizedDirectionVector) >= 0 ? -1 : 1;
+			this.rotationDegree = signum * rotationDegree;
+		}
 
 		// Throw PxPositionChanged-Event in case px-position has changed:
-		if (!vec2DRoundedEquals(newPosition, oldPosition)) {
-			this.onPositionChanged &&
-				this.onPositionChanged({
-					ship: this
-				});
-		}
+		this.onPositionChanged &&
+			this.onPositionChanged({
+				ship: this
+			});
 	}
 
 	public setOnPositionChangedHandler(
@@ -157,11 +152,11 @@ export class Ship {
 	}
 
 	public get currentPositionInPx(): IVector2D {
-		return roundVec2D(this.currentPosition);
+		return floorVec2D(this.currentPosition);
 	}
 
 	public get traveledDistanceInPx(): number {
-		return Math.round(this.traveledDistance);
+		return Math.floor(this.traveledDistance);
 	}
 
 	public get rotationDegreeRounded() {
