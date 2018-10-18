@@ -25,7 +25,6 @@ const ship = new Ship({
 
 // Register EventHandler to Ship model:
 ship.registerOnShipMovedHandler(event => {
-	console.log(JSON.stringify(event));
 	// Update View: Statistics
 	View.statistics.setTraveledDistance(event.ship.getTraveledDistanceInPx());
 	View.statistics.setIsMoving(event.ship.isMoving);
