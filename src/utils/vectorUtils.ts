@@ -18,6 +18,9 @@ export const roundVec2D = ([x, y]: IVector2D): IVector2D => [
 	Math.round(y)
 ];
 
+export const pxDistance = (x: IVector2D, y: IVector2D) =>
+	Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]));
+
 export const vec2DEquals = (x: IVector2D, y: IVector2D): boolean => {
 	return x[0] === y[0] && x[1] === y[1];
 };
