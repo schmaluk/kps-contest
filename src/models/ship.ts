@@ -140,28 +140,28 @@ export class Ship {
 			this._currentPosition
 		);
 
-		// Check, if the ship can reach the _targetStation during this update:
+		// Check, if the ship can reach the _targetStation during this MoveRequest:
 		if (distanceToTarget < distanceToMove) {
-			// Ship can reach targetStation within this MoveRequest:
+			// Ship can reach targetStation during this MoveRequest:
 			this.dockToTargetStation();
 		} else {
 			// Target is not yet reachable during this MoveRequest:
 			this.moveTowardsTargetStation(distanceToMove);
 		}
 
-		// Throw PositionUpdated-Event:
+		// Throw ShipMoved-Event:
 		this._onShipMoved &&
 			this._onShipMoved({
 				ship: this
 			});
 	}
 
-	// Periodically called externally to calculate new ship's position:
+	// Periodic MoveRequests called in order to calculate new ship's position:
 	public requestMove(): void {
 		const now = Date.now();
 		const elapsedTimeInMs = now - this._lastMoveRequestTimestamp;
 
-		// Check, if ship should get moved at all:
+		// Check, if the ship should be moved at all:
 		const shouldMove = this.shouldMove();
 
 		if (shouldMove) {
@@ -172,6 +172,7 @@ export class Ship {
 		this._lastMoveRequestTimestamp = now;
 	}
 
+	// Method for registering an EventHandler to the ship's movement:
 	public registerOnShipMovedHandler(onShipMovedHandler: IOnShipMovedHandler) {
 		this._onShipMoved = onShipMovedHandler.bind(this);
 		// Throw Event after setting Handler:
@@ -180,6 +181,7 @@ export class Ship {
 		});
 	}
 
+	// Ship can set course to another targetStation:
 	public setTargetStation(targetStation: Station) {
 		this._targetStation = targetStation;
 	}
