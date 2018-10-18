@@ -16,6 +16,7 @@ import { Station } from './station';
 export type IShipConfig = {
 	position: IVector2D;
 	shipSpeedPxPerMs: number;
+	measurePxDistance: (x: IVector2D, y: IVector2D) => number;
 };
 
 // Signature of IOnShipMoved-EventHandler for registering to a Ship-instance:
@@ -82,7 +83,7 @@ export class Ship {
 	// Moves ship to targetStation's position
 	// & sets to targetStation's rotation angle:
 	private dockToTargetStation(): void {
-		this._traveledDistance += pxDistance(
+		this._traveledDistance += this.shipConfig.measurePxDistance(
 			this._currentPosition,
 			this._targetStation.position
 		);
@@ -109,7 +110,10 @@ export class Ship {
 			multiplyVec2DByScalar(distanceToMove, normalizedDirection)
 		);
 
-		this._traveledDistance += pxDistance(this._currentPosition, newPosition);
+		this._traveledDistance += this.shipConfig.measurePxDistance(
+			this._currentPosition,
+			newPosition
+		);
 
 		// Update _currentPosition:
 		this._currentPosition = newPosition;

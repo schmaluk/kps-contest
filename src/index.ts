@@ -2,11 +2,25 @@ import { Ship } from './models/ship';
 import { config } from './config';
 import { View } from './views';
 import { Station } from './models/station';
+import {
+	measureChebyshevDistanceRounded,
+	measureEuclideanDistanceRounded,
+	measureManhattanDistanceRounded
+} from './utils/metrics';
+
+// Select the configured metric for measuring the
+// traveled pixel distance of the ship:
+const measurePxDistance = {
+	Chebyshev: measureChebyshevDistanceRounded,
+	Euclidean: measureEuclideanDistanceRounded,
+	Manhattan: measureManhattanDistanceRounded
+}[config.METRIC];
 
 // Create Ship Model instance:
 const ship = new Ship({
 	shipSpeedPxPerMs: config.SHIP_SPEED_PX_PER_SEC / 1000,
-	position: [200, 200]
+	position: [200, 200],
+	measurePxDistance: measurePxDistance
 });
 
 // Register EventHandler to Ship model:

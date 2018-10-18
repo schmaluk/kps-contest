@@ -21,5 +21,9 @@ export const config = {
 			position: [200, 370] as IVector2D,
 			dockAngle: 270
 		}
-	}
+	},
+	METRIC: 'Chebyshev' as 'Chebyshev'
+	// Alternative metrics for calculating the traveled distance:
+	//	METRIC: 'Euclidean' as 'Euclidean',
+	//	METRIC: 'Manhattan' as 'Manhattan',
 };
