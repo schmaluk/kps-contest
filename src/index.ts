@@ -10,7 +10,7 @@ import {
 
 // Select the configured metric for measuring the
 // traveled pixel distance of the ship:
-const measurePxDistance = {
+const measurePxDistanceFromConfig = {
 	Chebyshev: measureChebyshevDistance,
 	Euclidean: measureEuclideanDistance,
 	Manhattan: measureManhattanDistance
@@ -19,8 +19,8 @@ const measurePxDistance = {
 // Create + Configure a new ship:
 const ship = new Ship({
 	shipSpeedPxPerMs: config.SHIP_SPEED_PX_PER_SEC / 1000,
-	position: [200, 200],
-	measurePxDistance
+	position: config.INITIAL_SHIP_POSITION,
+	measurePxDistance: measurePxDistanceFromConfig
 });
 
 // Register the EventHandler to the ship:

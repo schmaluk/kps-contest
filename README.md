@@ -27,7 +27,7 @@ There are <b>different kind of metrics</b> which may potentially be used for thi
 #### Chebyshev-metric:  
   ```|| (x1, x2) - (y1, y2) || = Math.max(Math.abs(x1 -y1), Math.abs(x2 - y2))```
   
-  If pixels are diagonal to each other, the distance between them is counted as 1:
+  If 2 pixels are directly diagonal to each other, the distance between them is counted as 1:
   ```
   _ x
   x _
