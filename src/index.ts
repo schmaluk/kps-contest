@@ -10,10 +10,10 @@ const ship = new Ship({
 });
 
 // Register EventHandler to Ship model:
-ship.setOnShipMovedHandler(event => {
+ship.registerOnShipMovedHandler(event => {
 	console.log(JSON.stringify(event));
 	// Update View: Statistics
-	View.statistics.setTraveledDistance(event.ship.traveledDistanceInPx);
+	View.statistics.setTraveledDistance(event.ship.getTraveledDistanceInPx());
 	View.statistics.setIsMoving(event.ship.isMoving);
 	View.statistics.setLastStation(
 		(event.ship.getLastStation() &&
@@ -22,8 +22,8 @@ ship.setOnShipMovedHandler(event => {
 	);
 	// Update View: LakeMap
 	View.lakeMap.placeBoatOnLake({
-		position: event.ship.currentPositionInPx,
-		rotationAngle: event.ship.rotationAngleRounded
+		position: event.ship.getCurrentPositionInPx(),
+		rotationAngle: event.ship.getRotationAngleRounded()
 	});
 });
 
