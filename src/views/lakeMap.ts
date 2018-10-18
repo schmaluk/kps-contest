@@ -40,9 +40,12 @@ export class LakeMap {
 		this.boat.style.webkitTransform = rotationValue;
 	}
 
-	public setBoatOnLake(args: { position: IVector2D; rotationDegree?: number }) {
+	public placeBoatOnLake(args: {
+		position: IVector2D;
+		rotationAngle?: number;
+	}) {
 		this.setBoatPosition(args.position);
-		const degree = args.rotationDegree || 0;
+		const degree = args.rotationAngle || 0;
 		this.setBoatRotation(degree);
 	}
 }

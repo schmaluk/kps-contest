@@ -3,7 +3,7 @@ import {
 	IVector2D,
 	multiplyVec2DByScalar,
 	vec2DEquals,
-	floorVec2D,
+	roundVec2D,
 	subtractVec2Ds,
 	vec2DLength,
 	vec2DScalarProduct,
@@ -18,7 +18,7 @@ export type IShipConfig = {
 };
 
 // Signature of PxPositionChange-Handler for registering to a Ship-instance:
-export type IPositionUpdatedHandler = (
+export type IOnShipMovedHandler = (
 	event: {
 		ship: Ship;
 	}
@@ -27,40 +27,40 @@ export type IPositionUpdatedHandler = (
 // Ship-Model:
 export class Ship {
 	// ship's state:
-	private currentPosition: IVector2D;
-	private traveledDistance: number = 0;
+	private _currentPosition: IVector2D;
+	private _traveledDistance: number = 0;
 
-	private targetStation: Station | null;
-	private lastStation: Station | null;
+	private _targetStation: Station | null;
+	private _lastStation: Station | null;
 
-	private rotationDegree: number = 0;
+	private _rotationAngle: number = 0;
 
 	// Could be derived but included here for simplicity:
 	public isMoving: boolean = false;
 
 	// EventHandler fired when ship's position has been updated:
-	private onPositionUpdated: IPositionUpdatedHandler | null;
+	private _onShipMoved: IOnShipMovedHandler | null;
 
 	// timestamp of last update of ship's position:
-	private lastRequestTimestamp: number | null;
+	private _lastRequestTimestamp: number | null;
 
 	public constructor(private shipConfig: IShipConfig) {
 		// Save ship's configuration: speed etc.
-		this.currentPosition = shipConfig.position;
+		this._currentPosition = shipConfig.position;
 	}
 
 	// Checks, if we should update the current position of the ship:
 	private shouldMove(): boolean {
 		// Upon 1st update call the ship's position change missing timestamp:
 		// Skip position update
-		const isFirstUpdate = !this.lastRequestTimestamp;
+		const isFirstUpdate = !this._lastRequestTimestamp;
 		if (isFirstUpdate) {
 			return false;
 		}
 
 		// When a target station has not been set yet:
 		// Skip position update
-		const shipHasNoTargetStation = !this.targetStation;
+		const shipHasNoTargetStation = !this._targetStation;
 		if (shipHasNoTargetStation) {
 			return false;
 		}
@@ -68,8 +68,8 @@ export class Ship {
 		// Ship has already arrived at target station:
 		// Skip position update
 		const shipHasArrivedAtTargetStation = vec2DEquals(
-			this.currentPosition,
-			this.targetStation.position
+			this._currentPosition,
+			this._targetStation.position
 		);
 		if (shipHasArrivedAtTargetStation) {
 			return false;
@@ -79,17 +79,17 @@ export class Ship {
 	}
 
 	private dockToTargetStation(): void {
-		this.currentPosition = this.targetStation.position;
+		this._currentPosition = this._targetStation.position;
 		// Rotate Ship for docking:
-		this.rotationDegree = this.targetStation.dockAngle;
+		this._rotationAngle = this._targetStation.dockAngle;
 		this.isMoving = false;
-		this.lastStation = this.targetStation;
+		this._lastStation = this._targetStation;
 	}
 
 	private moveToTargetStationDirection(distanceToMove: number): void {
 		const connection = subtractVec2Ds(
-			this.targetStation.position,
-			this.currentPosition
+			this._targetStation.position,
+			this._currentPosition
 		);
 		const normalizedDirection = multiplyVec2DByScalar(
 			1 / vec2DLength(connection),
@@ -97,11 +97,11 @@ export class Ship {
 		);
 
 		const newPosition = addVec2Ds(
-			this.currentPosition,
+			this._currentPosition,
 			multiplyVec2DByScalar(distanceToMove, normalizedDirection)
 		);
-		// Update currentPosition:
-		this.currentPosition = newPosition;
+		// Update _currentPosition:
+		this._currentPosition = newPosition;
 		this.isMoving = true;
 
 		// Update rotation degree:
@@ -111,34 +111,34 @@ export class Ship {
 		// Calculate signum for rotation: + or - aka 1 or -1
 		const signum =
 			vec2DScalarProduct([0, 1], normalizedDirection) >= 0 ? -1 : 1;
-		this.rotationDegree = signum * rotationDegree;
+		this._rotationAngle = signum * rotationDegree;
 	}
 
-	// Updates the currentPosition depending on elapsedTime and speed:
+	// Updates the _currentPosition depending on elapsedTime and speed:
 	private moveShip(elapsedTimeInMs: number) {
 		// moveDistance is the distance the ship can move within this step:
 		const moveDistance = elapsedTimeInMs * this.shipConfig.shipSpeedPxPerMs;
 
 		const distanceToTarget = distanceBetweenVec2Ds(
-			this.targetStation.position,
-			this.currentPosition
+			this._targetStation.position,
+			this._currentPosition
 		);
 
-		// Check, if the ship can reach the targetStation during this update:
+		// Check, if the ship can reach the _targetStation during this update:
 		if (distanceToTarget < moveDistance) {
 			// Target is within reachable distance during this update:
 			this.dockToTargetStation();
-			this.traveledDistance += distanceToTarget;
+			this._traveledDistance += distanceToTarget;
 		} else {
 			// Target is not yet reachable during this update:
 			// But move the ship into this direction:
 			this.moveToTargetStationDirection(moveDistance);
-			this.traveledDistance += moveDistance;
+			this._traveledDistance += moveDistance;
 		}
 
 		// Throw PositionUpdated-Event:
-		this.onPositionUpdated &&
-			this.onPositionUpdated({
+		this._onShipMoved &&
+			this._onShipMoved({
 				ship: this
 			});
 	}
@@ -146,9 +146,9 @@ export class Ship {
 	// Periodically called in order tu update ship's position:
 	public requestMove(): void {
 		const now = Date.now();
-		const elapsedTimeInMs = now - this.lastRequestTimestamp;
+		const elapsedTimeInMs = now - this._lastRequestTimestamp;
 
-		// Check, if any update to currentPosition is required:
+		// Check, if any update to _currentPosition is required:
 		const shouldMove = this.shouldMove();
 
 		if (shouldMove) {
@@ -156,36 +156,34 @@ export class Ship {
 		}
 
 		// Update timestamp:
-		this.lastRequestTimestamp = now;
+		this._lastRequestTimestamp = now;
 	}
 
-	public setOnPositionChangedHandler(
-		onPositionChangedHandler: IPositionUpdatedHandler
-	) {
-		this.onPositionUpdated = onPositionChangedHandler.bind(this);
+	public setOnShipMovedHandler(onShipMovedHandler: IOnShipMovedHandler) {
+		this._onShipMoved = onShipMovedHandler.bind(this);
 		// Throw Event after setting Handler:
-		this.onPositionUpdated({
+		this._onShipMoved({
 			ship: this
 		});
 	}
 
 	public setTargetStation(targetStation: Station) {
-		this.targetStation = targetStation;
+		this._targetStation = targetStation;
 	}
 
 	public getLastStation(): Station {
-		return this.lastStation;
+		return this._lastStation;
 	}
 
 	public get currentPositionInPx(): IVector2D {
-		return floorVec2D(this.currentPosition);
+		return roundVec2D(this._currentPosition);
 	}
 
 	public get traveledDistanceInPx(): number {
-		return Math.round(this.traveledDistance);
+		return Math.round(this._traveledDistance);
 	}
 
-	public get rotationDegreeRounded() {
-		return Math.round(this.rotationDegree);
+	public get rotationAngleRounded() {
+		return Math.round(this._rotationAngle);
 	}
 }

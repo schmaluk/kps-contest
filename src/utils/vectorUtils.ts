@@ -13,7 +13,7 @@ export const subtractVec2Ds = (x: IVector2D, y: IVector2D): IVector2D =>
 export const vec2DLength = (x: IVector2D): number =>
 	Math.sqrt(x[0] ** 2 + x[1] ** 2);
 
-export const floorVec2D = ([x, y]: IVector2D): IVector2D => [
+export const roundVec2D = ([x, y]: IVector2D): IVector2D => [
 	Math.round(x),
 	Math.round(y)
 ];

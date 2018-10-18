@@ -1,5 +1,5 @@
 export const buttons = {
-	addStationChangeHandlers: (
+	addTargetStationChangeHandlers: (
 		stationChangedHandler: (stationNumber: number) => any
 	) => {
 		const buttons = document.querySelectorAll('nav button');
