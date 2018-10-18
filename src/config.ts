@@ -24,6 +24,6 @@ export const config = {
 	},
 	METRIC: 'Chebyshev' as 'Chebyshev'
 	// Alternative metrics for calculating the traveled distance:
-	//	METRIC: 'Euclidean' as 'Euclidean',
-	//	METRIC: 'Manhattan' as 'Manhattan',
+	//METRIC: 'Euclidean' as 'Euclidean'
+	//METRIC: 'Manhattan' as 'Manhattan'
 };

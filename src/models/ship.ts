@@ -7,8 +7,7 @@ import {
 	subtractVec2Ds,
 	vec2DLength,
 	vec2DScalarProduct,
-	distanceBetweenVec2Ds,
-	pxDistance
+	distanceBetweenVec2Ds
 } from '../utils/vectorUtils';
 import { Station } from './station';
 
@@ -96,19 +95,17 @@ export class Ship {
 
 	// Internal helper: Moves ship towards targetStation:
 	private moveTowardsTargetStation(distanceToMove: number): void {
-		const connection = subtractVec2Ds(
+		const vectorToTargetStation = subtractVec2Ds(
 			this._targetStation.position,
 			this._currentPosition
 		);
-		const normalizedDirection = multiplyVec2DByScalar(
-			1 / vec2DLength(connection),
-			connection
+		const vectorToNewPosition = multiplyVec2DByScalar(
+			distanceToMove /
+				this.shipConfig.measurePxDistance(vectorToTargetStation, [0, 0]),
+			vectorToTargetStation
 		);
 
-		const newPosition = addVec2Ds(
-			this._currentPosition,
-			multiplyVec2DByScalar(distanceToMove, normalizedDirection)
-		);
+		const newPosition = addVec2Ds(this._currentPosition, vectorToNewPosition);
 
 		this._traveledDistance += this.shipConfig.measurePxDistance(
 			this._currentPosition,
@@ -120,12 +117,16 @@ export class Ship {
 		this.isMoving = true;
 
 		// Calculate suitable rotation angle:
-		const cosAlpha = vec2DScalarProduct([-1, 0], normalizedDirection);
+		const connectionVector = multiplyVec2DByScalar(
+			1 / vec2DLength(vectorToTargetStation),
+			vectorToTargetStation
+		);
+		const cosAlpha = vec2DScalarProduct([-1, 0], connectionVector);
 		const alpha = (Math.acos(cosAlpha) / Math.PI) * 180;
 		const rotationAngleAbsolute = alpha >= 0 ? alpha : 180 - alpha;
 		// Calculate sign for rotation: + or - aka 1 or -1
 		const rotationSign =
-			vec2DScalarProduct([0, 1], normalizedDirection) >= 0 ? -1 : 1;
+			vec2DScalarProduct([0, 1], vectorToNewPosition) >= 0 ? -1 : 1;
 		this._rotationAngle = rotationSign * rotationAngleAbsolute;
 	}
 

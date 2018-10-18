@@ -17,9 +17,13 @@ npm start
 Afterwards please open [http://localhost:8080](http://localhost:8080).
 
 # Multiple interpretations of the contest description
-It was not clear to me what the <b>distance in Pixels</b> means in the contest description.
+It was not clear to me what the <b>distance in Pixels</b> means in the contest description for measuring the distance between 2 points in 2D-space.
 
-There are <b>different kind of metrics</b> as described in the following:
+All metrics below provide the same values for 2 points with the same x-coordinate or y-coordinate.
+
+They only differ from each other for 2 points which are diagonal to each other.
+
+There are <b>different kind of metrics</b> which may potentially be used for this solution as described in the following:
 #### Chebyshev-metric:  
   ```|| (x1, x2) - (y1, y2) || = Math.max(Math.abs(x1 -y1), Math.abs(x2 - y2))```
   
@@ -28,8 +32,8 @@ There are <b>different kind of metrics</b> as described in the following:
   _ x
   x _
   ```
-  The distance between the 'x'-pixels in this metric is 1 because 1 Pixel left and 1 Pixel up.
-  The maximum of 1 and 1 is: 1. 
+  The distance between the 'x'-pixels in this metric is 1 because 1 Pixel difference along the x-Axis and 1 Pixel difference along the y-Axis.
+  The maximum of 1 and 1 results in: 1. 
   
 #### Euclidean metric:
 
@@ -46,7 +50,7 @@ There are <b>different kind of metrics</b> as described in the following:
   _ x
   x _
   ```
-  The distance between the 'x'-pixels in this metric is 2 because 1 Pixel right and 1 Pixel up results in: 1 + 1.
+  The distance between the 'x'-pixels in this metric is 2 because 1 Pixel difference along the x-Axis and 1 Pixel difference along the y-Axis results in: 1 + 1.
  
 ### Solution
 So in order to provide a safe solution, I have implemented all 3 possibilities by making the metric configurable the src/config.ts
