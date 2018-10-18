@@ -42,11 +42,11 @@ export class Ship {
 	// EventHandler fired when ship has been moved:
 	private _onShipMoved: IOnShipMovedHandler | null;
 
-	// timestamp of last incoming MoveRequest:
+	// timestamp of the last MoveRequest:
 	private _lastMoveRequestTimestamp: number | null;
 
 	public constructor(private shipConfig: IShipConfig) {
-		// Save ship's configuration: speed etc.
+		// Initialize the current position of the ship:
 		this._currentPosition = shipConfig.position;
 	}
 

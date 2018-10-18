@@ -16,16 +16,16 @@ const measurePxDistance = {
 	Manhattan: measureManhattanDistance
 }[config.METRIC];
 
-// Create Ship Model instance:
+// Create + Configure a new ship:
 const ship = new Ship({
 	shipSpeedPxPerMs: config.SHIP_SPEED_PX_PER_SEC / 1000,
 	position: [200, 200],
 	measurePxDistance
 });
 
-// Register EventHandler to Ship model:
+// Register the EventHandler to the ship:
 ship.registerOnShipMovedHandler(event => {
-	// Update View: Statistics
+	// Update the statistics in the View whenever ship has moved:
 	View.statistics.setTraveledDistance(event.ship.getTraveledDistanceInPx());
 	View.statistics.setIsMoving(event.ship.isMoving);
 	View.statistics.setLastStation(
@@ -33,14 +33,14 @@ ship.registerOnShipMovedHandler(event => {
 			event.ship.getLastStation().stationNumber) ||
 			null
 	);
-	// Update View: LakeMap
+	// Update the boat position in the View whenever ship has moved:
 	View.lakeMap.placeBoatOnLake({
 		position: event.ship.getCurrentPositionInPx(),
 		rotationAngle: event.ship.getRotationAngleRounded()
 	});
 });
 
-// Register Handlers to View: Buttons
+// Register Eventhandler to the View:
 const stations = {
 	1: new Station(config.STATION.one),
 	2: new Station(config.STATION.two),
@@ -48,11 +48,12 @@ const stations = {
 	4: new Station(config.STATION.four)
 };
 View.buttons.addTargetStationChangeHandlers(stationNumber => {
+	// Update the ship's model targetStation whenever a button has been pressed:
 	const targetStation = stations[stationNumber];
 	ship.setTargetStation(targetStation);
 });
 
-// Start loop for ship's position update:
+// Start loop: Send periodic MoveRequest to the ship
 setInterval(() => {
 	ship.requestMove();
 }, config.UPDATE_LOOP_INTERVAL_MS);
